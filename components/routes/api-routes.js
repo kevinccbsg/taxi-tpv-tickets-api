@@ -1,13 +1,10 @@
 
-const pdfParser = require('../../lib/pdfParser');
-
 module.exports = () => {
-	const start = async ({ app }) => {
+	const start = async ({ app, controller }) => {
 		app.post('/api/v1/tickets', async (req, res) => {
-			const ibercajaInfo = pdfParser('ibercaja');
 			const { file } = req.files;
-			const parsedInfo = await ibercajaInfo(file.data, file.name);
-			res.json({ success: true, file: parsedInfo });
+			const processedInfo = await controller.savePDFInfo(file);
+			res.json({ success: true, file: processedInfo });
 		});
 
 		return Promise.resolve();
