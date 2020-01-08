@@ -13,9 +13,9 @@ module.exports = {
 						version: '1.0.0',
 					},
 					host: process.env.SERVICE_ENV || 'localhost:4000',
-					basePath: '/v1',
+					basePath: '/',
 					produces: ['application/json'],
-					schemes: ['http'],
+					schemes: ['https', 'http'],
 					securityDefinitions: {
 						JWT: {
 							type: 'apiKey',
