@@ -19,7 +19,6 @@ module.exports = () => {
 			}));
 			const ticketsPromises = tickets.map(ticket => (
 				store.upsertTickets({
-					pdfName: ticket.pdfName,
 					year: ticket.name,
 					hour: ticket.name,
 					price: ticket.name,

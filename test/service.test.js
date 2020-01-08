@@ -13,7 +13,7 @@ describe('Service Tests', () => {
 
 	after(() => sys.stop());
 
-	it.only('returns manifest', () => request
+	it('returns manifest', () => request
 		.get('/__/manifest')
 		.expect(200)
 		.then(response => {

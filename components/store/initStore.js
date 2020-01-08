@@ -1,6 +1,6 @@
 
 module.exports = () => {
-	const start = ({ mongo }) => {
+	const start = async ({ mongo }) => {
 		const tickets = mongo.collection('tickets');
 		const upsertCollection = collection => (filter, body) => collection.updateOne(filter, { $set: { ...body } }, { upsert: true });
 
