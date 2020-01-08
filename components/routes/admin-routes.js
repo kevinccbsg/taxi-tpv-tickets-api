@@ -3,8 +3,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
-const pdfParser = require('../../lib/pdfParser');
-
 module.exports = () => {
 	const start = async ({ manifest = {}, app, config }) => {
 		const { swaggerOptions } = config;
@@ -29,13 +27,6 @@ module.exports = () => {
 		 * @returns 200 - Sucessful response
 		*/
 		app.get('/__/manifest', (req, res) => res.json(manifest));
-
-		app.post('/api/v1/tickets', async (req, res) => {
-			const ibercajaInfo = pdfParser('ibercaja');
-			const { file } = req.files;
-			const parsedInfo = await ibercajaInfo(file.data, file.name);
-			res.json({ success: true, file: parsedInfo });
-		});
 
 		return Promise.resolve();
 	};

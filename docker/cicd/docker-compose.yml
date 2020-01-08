@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  mongo:
+    build: ./../mongo
+    container_name: tpv-tickets-mongo
+    image: tpv-tickets:mongo
+    environment:
+      - MONGO_DB_APP_PASSWORD=node
+      - MONGO_DB_APP_USERNAME=node
+      - MONGO_DB_APP_DATABASE=tpv-tickets
+    ports:
+      - '27017:27017'
+    healthcheck:
+      test: ['CMD', 'echo', 'show dbs', '|', 'mongo']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: mongod --smallfiles
+    # networks:
+    #   - mongodb
+  service:
+    build: ../../
+    container_name: tg-tpv-tickets
+    command: ['bash', '-c', 'tail -f /dev/null']
+    depends_on:
+      - mongo
+    environment:
+      WAIT_HOSTS: tpv-tickets-mongo:27017
+    # networks:
+    #   - mongodb
+# networks:
+#   mongodb:
