@@ -3,8 +3,8 @@ version: '3'
 services:
   mongo:
     build: ./../mongo
-    container_name: bookings-back-mongo
-    image: bookings-back:mongo
+    container_name: tpv-tickets-mongo
+    image: tpv-tickets:mongo
     environment:
       - MONGO_DB_APP_PASSWORD=node
       - MONGO_DB_APP_USERNAME=node
