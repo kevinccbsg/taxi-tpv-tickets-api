@@ -7,6 +7,15 @@
  */
 
 /**
+ * @typedef TicketsResponse
+ * @property {string} formattedDate.required
+ * @property {string} date.required
+ * @property {string} hour.required
+ * @property {string} price.required
+ * @property {boolean} validated
+ */
+
+/**
  * @typedef SuccessPDFResponse
  * @property {boolean} success.required
  * @property {Array.<Tickets>} processedInfo.required
