@@ -23,6 +23,15 @@ module.exports = () => {
 			}
 		});
 
+		app.get('/api/v1/tickets', async (req, res, next) => {
+			try {
+				const tickets = await controller.getTickets();
+				return res.json(tickets);
+			} catch (error) {
+				return next(tagError(error));
+			}
+		});
+
 		app.use(handleHttpError(logger));
 		return Promise.resolve();
 	};

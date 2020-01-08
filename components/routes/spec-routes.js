@@ -1,6 +1,6 @@
 /**
  * @typedef Tickets
- * @property {string} year.required
+ * @property {string} formattedDate.required
  * @property {string} hour.required
  * @property {string} price.required
  * @property {boolean} validated

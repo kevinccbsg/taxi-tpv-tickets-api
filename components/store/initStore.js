@@ -9,9 +9,18 @@ module.exports = () => {
 			return !!ticket;
 		};
 
+		const getTickets = async () => {
+			const ticketList = await tickets.find({}, {
+				projection: { _id: 0 },
+				sort: [['date', -1]],
+			}).toArray();
+			return ticketList;
+		};
+
 		return {
 			upsertTickets: upsertCollection(tickets),
 			alreadyRecorded,
+			getTickets,
 		};
 	};
 

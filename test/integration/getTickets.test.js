@@ -4,7 +4,7 @@ const supertest = require('supertest');
 const system = require('../../system');
 const fileMock = require('../mocks/fileMock');
 
-describe('Upload endpoints', () => {
+describe('GET endpoints', () => {
 	let request;
 	let sys = system();
 	sys = sys.set('filePDF', fileMock()).dependsOn();
@@ -26,14 +26,15 @@ describe('Upload endpoints', () => {
 
 	after(() => sys.stop());
 
-	it('should save pdf mocked data in mongodb', () => request
+	it('should return pdf info when we called GET /api/v1/tickets', () => request
 		.post('/api/v1/tickets')
 		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
 		.expect(200)
-		.then(async response => {
-			expect(response.headers['content-type']).to.equal('application/json; charset=utf-8');
-			const tickets = await ticket.find({}).toArray();
+		.then(() => request.get('/api/v1/tickets')
+			.expect(200))
+		.then(({ body: tickets }) => {
 			tickets.forEach(ticketItem => {
+				expect(ticketItem).not.to.have.property('_id');
 				expect(ticketItem).to.have.property('validated');
 				expect(ticketItem.validated).to.eql(false);
 				expect(ticketItem).to.have.property('pdfName');
@@ -43,13 +44,4 @@ describe('Upload endpoints', () => {
 				expect(ticketItem).to.have.property('formatDate');
 			});
 		}));
-
-	it('should return 400 if pdf was already recorded', () => request
-		.post('/api/v1/tickets')
-		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
-		.expect(200)
-		.then(() => request
-			.post('/api/v1/tickets')
-			.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
-			.expect(400)));
 });

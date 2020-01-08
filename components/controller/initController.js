@@ -2,6 +2,7 @@ const {
 	errorFactory,
 	CustomErrorTypes,
 } = require('error-handler-module');
+const parse = require('date-fns/parse');
 
 const wrongInput = errorFactory(CustomErrorTypes.WRONG_INPUT);
 
@@ -21,15 +22,25 @@ module.exports = () => {
 			}));
 			const ticketsPromises = tickets.map(ticket => (
 				store.upsertTickets({
-					year: ticket.name,
-					hour: ticket.name,
-					price: ticket.name,
-				}, ticket)
+					formattedDate: ticket.formattedDate,
+					hour: ticket.hour,
+					price: ticket.price,
+				}, {
+					...ticket,
+					date: parse(ticket.formattedDate, 'dd-MM-yyyy', new Date()),
+				})
 			));
 			await Promise.all(ticketsPromises);
 			return parsedInfo.data;
 		};
-		return { savePDFInfo };
+
+		const getTickets = async () => {
+			logger.info('Geting tickets');
+			const tickets = await store.getTickets();
+			return tickets;
+		};
+
+		return { savePDFInfo, getTickets };
 	};
 
 	return { start };
