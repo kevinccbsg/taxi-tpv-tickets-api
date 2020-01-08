@@ -16,9 +16,17 @@ describe('Service Tests', () => {
 		ticket = mongo.collection('tickets');
 	});
 
+	beforeEach(async () => {
+		await ticket.deleteMany({});
+	});
+
+	afterEach(async () => {
+		await ticket.deleteMany({});
+	});
+
 	after(() => sys.stop());
 
-	it('returns pdf mocked data', () => request
+	it('should save pdf mocked data in mongodb', () => request
 		.post('/api/v1/tickets')
 		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
 		.expect(200)
@@ -35,4 +43,13 @@ describe('Service Tests', () => {
 				expect(ticketItem).to.have.property('year');
 			});
 		}));
+
+	it('should return 400 if pdf was already recorded', () => request
+		.post('/api/v1/tickets')
+		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
+		.expect(200)
+		.then(() => request
+			.post('/api/v1/tickets')
+			.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
+			.expect(400)));
 });
