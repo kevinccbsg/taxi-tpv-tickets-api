@@ -15,6 +15,8 @@ module.exports = () => {
 	}) => {
 		const jwt = token(config.tokenSecret);
 
+		const isVerified = authorization => jwt.verifyToken(authorization);
+
 		const savePDFInfo = async (file, type = 'ibercaja') => {
 			if (!file) throw wrongInput('File is required');
 			const wasRecorded = await store.alreadyRecorded(file.name);
@@ -70,6 +72,7 @@ module.exports = () => {
 			getTickets,
 			registerTicket,
 			login,
+			isVerified,
 		};
 	};
 

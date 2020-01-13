@@ -3,6 +3,7 @@ const expect = require('expect.js');
 const supertest = require('supertest');
 const system = require('../../system');
 const fileMock = require('../mocks/fileMock');
+const getAuthToken = require('../mocks/getAuthToken');
 
 describe('Upload endpoints', () => {
 	let request;
@@ -10,10 +11,13 @@ describe('Upload endpoints', () => {
 	sys = sys.set('filePDF', fileMock()).dependsOn();
 
 	let ticket;
+	let jwt;
 	before(async () => {
-		const { app, mongo } = await sys.start();
+		const { app, mongo, store } = await sys.start();
 		request = supertest(app);
 		ticket = mongo.collection('tickets');
+		const userToken = await getAuthToken(request, store);
+		jwt = userToken;
 	});
 
 	beforeEach(async () => {
@@ -28,6 +32,7 @@ describe('Upload endpoints', () => {
 
 	it('should save pdf mocked data in mongodb', () => request
 		.post('/api/v1/tickets')
+		.set('Authorization', jwt)
 		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
 		.expect(200)
 		.then(async response => {
@@ -46,10 +51,12 @@ describe('Upload endpoints', () => {
 
 	it('should return 400 if pdf was already recorded', () => request
 		.post('/api/v1/tickets')
+		.set('Authorization', jwt)
 		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
 		.expect(200)
 		.then(() => request
 			.post('/api/v1/tickets')
+			.set('Authorization', jwt)
 			.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
 			.expect(400)));
 });

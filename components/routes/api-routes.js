@@ -9,6 +9,15 @@ const wrongInput = errorFactory(CustomErrorTypes.WRONG_INPUT);
 
 module.exports = () => {
 	const start = async ({ app, controller, logger }) => {
+		const authMiddleware = (req, res, next) => {
+			const { authorization } = req.headers;
+			try {
+				controller.isVerified(authorization);
+				return next();
+			} catch (error) {
+				return next(tagError(error));
+			}
+		};
 		/**
 		 * This endpoint allows you to save tickets by uploading pdf files
 		 * @route POST /api/v1/tickets
@@ -17,7 +26,7 @@ module.exports = () => {
 		 * @returns {SuccessPDFResponse.model} 200 - Successful operation
 		 * @returns {Error.model} <any> - Error message
 		*/
-		app.post('/api/v1/tickets', async (req, res, next) => {
+		app.post('/api/v1/tickets', authMiddleware, async (req, res, next) => {
 			try {
 				const { file } = req.files;
 				const processedInfo = await controller.savePDFInfo(file);
@@ -35,7 +44,7 @@ module.exports = () => {
 		 * @returns {Array.<TicketsResponse>} 200 - Successful operation
 		 * @returns {Error.model} <any> - Error message
 		*/
-		app.get('/api/v1/tickets', async (req, res, next) => {
+		app.get('/api/v1/tickets', authMiddleware, async (req, res, next) => {
 			try {
 				const tickets = await controller.getTickets();
 				return res.json(tickets);
@@ -52,7 +61,7 @@ module.exports = () => {
 		 * @returns {SuccessTicketRegistered.model} 200 - Successful operation
 		 * @returns {Error.model} <any> - Error message
 		*/
-		app.post('/api/v1/tickets/register', async (req, res, next) => {
+		app.post('/api/v1/tickets/register', authMiddleware, async (req, res, next) => {
 			try {
 				const { date, price } = req.body;
 				if (!date && !price) {
