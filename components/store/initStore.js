@@ -38,7 +38,7 @@ module.exports = () => {
 		const getUserByEmail = async email => {
 			const user = await users.findOne({ email });
 			if (!user) return {};
-			const normalPassword = decrypt(user.password);
+			const normalPassword = decrypt(user.password, user.salt);
 			return { ...user, password: normalPassword };
 		};
 

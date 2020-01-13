@@ -65,6 +65,27 @@ module.exports = () => {
 			}
 		});
 
+		/**
+		 * This endpoint allows you retrieve tickets list
+		 * @route POST /api/v1/login
+		 * @group User - Everything about user
+		 * @param {LoginRequest.model} body.body.required
+		 * @returns {LoginResponse.model} 200 - Successful operation
+		 * @returns {Error.model} <any> - Error message
+		*/
+		app.post('/api/v1/login', async (req, res, next) => {
+			try {
+				const { username, password } = req.body;
+				if (!username && !password) {
+					throw wrongInput('You must provide username and password');
+				}
+				const loginInfo = await controller.login(username, password);
+				return res.json(loginInfo);
+			} catch (error) {
+				return next(tagError(error));
+			}
+		});
+
 		app.use(handleHttpError(logger));
 		return Promise.resolve();
 	};

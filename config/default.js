@@ -3,6 +3,13 @@ module.exports = {
 		host: '0.0.0.0',
 		port: 4000,
 	},
+	controller: {
+		tokenSecret: process.env.TOKEN_SECRET,
+	},
+	store: {
+		cryptoSecret: process.env.CRYPTO_SECRET,
+		cryptoAlgorithm: process.env.CRYPTO_ALGORITHM,
+	},
 	routes: {
 		admin: {
 			swaggerOptions: {

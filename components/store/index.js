@@ -3,4 +3,4 @@ const store = require('./initStore');
 
 module.exports = new System({ name: 'store' })
 	.add('store', store())
-	.dependsOn('mongo');
+	.dependsOn('mongo', 'config');

@@ -33,6 +33,18 @@
  */
 
 /**
+ * @typedef LoginRequest
+ * @property {string} username.required
+ * @property {string} password.required
+ */
+
+/**
+ * @typedef LoginResponse
+ * @property {string} jwt.required
+ * @property {string} email.required
+ */
+
+/**
  * @typedef Error
  * @property {number} statusCode -  <span style="color: gray;font-style: italic">404</span>
  * @property {string} error -  <span style="color: gray;font-style: italic">example: Error description message</span>
