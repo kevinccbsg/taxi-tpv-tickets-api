@@ -11,20 +11,24 @@ describe('POST endpoints', () => {
 	sys = sys.set('filePDF', fileMock()).dependsOn();
 
 	let ticket;
+	let usersCollection;
 	before(async () => {
 		const { app, mongo, store } = await sys.start();
 		request = supertest(app);
 		ticket = mongo.collection('tickets');
+		usersCollection = mongo.collection('users');
 		const userToken = await getAuthToken(request, store);
 		jwt = userToken;
 	});
 
 	beforeEach(async () => {
 		await ticket.deleteMany({});
+		await usersCollection.deleteMany({});
 	});
 
 	afterEach(async () => {
 		await ticket.deleteMany({});
+		await usersCollection.deleteMany({});
 	});
 
 	after(() => sys.stop());

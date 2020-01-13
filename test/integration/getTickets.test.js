@@ -12,20 +12,24 @@ describe('GET endpoints', () => {
 
 	let ticket;
 	let jwt;
+	let usersCollection;
 	before(async () => {
 		const { app, mongo, store } = await sys.start();
 		request = supertest(app);
 		ticket = mongo.collection('tickets');
+		usersCollection = mongo.collection('users');
 		const userToken = await getAuthToken(request, store);
 		jwt = userToken;
 	});
 
 	beforeEach(async () => {
 		await ticket.deleteMany({});
+		await usersCollection.deleteMany({});
 	});
 
 	afterEach(async () => {
 		await ticket.deleteMany({});
+		await usersCollection.deleteMany({});
 	});
 
 	after(() => sys.stop());
