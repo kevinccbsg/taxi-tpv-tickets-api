@@ -4,7 +4,7 @@ const supertest = require('supertest');
 const system = require('../../system');
 const fileMock = require('../mocks/fileMock');
 
-describe('GET endpoints', () => {
+describe('POST endpoints', () => {
 	let request;
 	let sys = system();
 	sys = sys.set('filePDF', fileMock()).dependsOn();
@@ -26,22 +26,22 @@ describe('GET endpoints', () => {
 
 	after(() => sys.stop());
 
-	it('should retrieve a list of tickets when we called GET /api/v1/tickets', () => request
+	it('should register a ticket after calling POST /api/v1/tickets', () => request
 		.post('/api/v1/tickets')
 		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
 		.expect(200)
-		.then(() => request.get('/api/v1/tickets')
+		.then(() => request.post('/api/v1/tickets/register')
+			.send({
+				date: '13-12-2019',
+				price: '2,6',
+			})
 			.expect(200))
-		.then(({ body: tickets }) => {
-			tickets.forEach(ticketItem => {
-				expect(ticketItem).not.to.have.property('_id');
-				expect(ticketItem).to.have.property('validated');
-				expect(ticketItem.validated).to.eql(false);
-				expect(ticketItem).to.have.property('pdfName');
-				expect(ticketItem.pdfName).to.eql('file-mock.txt');
-				expect(ticketItem).to.have.property('price');
-				expect(ticketItem).to.have.property('hour');
-				expect(ticketItem).to.have.property('formattedDate');
+		.then(async ({ body }) => {
+			expect(body.success).to.eql(true);
+			const { validated } = await ticket.findOne({
+				formattedDate: '13-12-2019',
+				price: '2,6',
 			});
+			expect(validated).to.eql(true);
 		}));
 });

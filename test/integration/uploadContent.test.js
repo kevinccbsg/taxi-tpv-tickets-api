@@ -40,7 +40,7 @@ describe('Upload endpoints', () => {
 				expect(ticketItem.pdfName).to.eql('file-mock.txt');
 				expect(ticketItem).to.have.property('price');
 				expect(ticketItem).to.have.property('hour');
-				expect(ticketItem).to.have.property('formatDate');
+				expect(ticketItem).to.have.property('formattedDate');
 			});
 		}));
 
