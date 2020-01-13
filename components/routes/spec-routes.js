@@ -34,7 +34,7 @@
 
 /**
  * @typedef LoginRequest
- * @property {string} username.required
+ * @property {string} email.required
  * @property {string} password.required
  */
 

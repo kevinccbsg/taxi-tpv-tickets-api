@@ -10,7 +10,7 @@ module.exports = () => {
 	const start = async ({ mongo, config }) => {
 		const tickets = mongo.collection('tickets');
 		const users = mongo.collection('users');
-		const { decrypt } = crypto(config.cryptoSecret, config.cryptoAlgorithm);
+		const { decrypt, encrypt } = crypto(config.cryptoSecret, config.cryptoAlgorithm);
 		const upsertCollection = collection => (filter, body) => collection.updateOne(filter, { $set: { ...body } }, { upsert: true });
 
 		const alreadyRecorded = async name => {
@@ -38,8 +38,20 @@ module.exports = () => {
 		const getUserByEmail = async email => {
 			const user = await users.findOne({ email });
 			if (!user) return {};
-			const normalPassword = decrypt(user.password, user.salt);
+			const normalPassword = decrypt(user.password, user.salt.buffer);
 			return { ...user, password: normalPassword };
+		};
+
+		const registerUser = async user => {
+			const { crypted, salt } = encrypt(user.password);
+			const payload = {
+				name: user.name,
+				email: user.email,
+				password: crypted,
+				salt,
+			};
+			await users.insertOne(payload);
+			return { email: user.email };
 		};
 
 		return {
@@ -48,6 +60,7 @@ module.exports = () => {
 			getTickets,
 			registerTicket,
 			getUserByEmail,
+			registerUser,
 		};
 	};
 

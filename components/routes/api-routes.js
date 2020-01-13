@@ -75,11 +75,11 @@ module.exports = () => {
 		*/
 		app.post('/api/v1/login', async (req, res, next) => {
 			try {
-				const { username, password } = req.body;
-				if (!username && !password) {
-					throw wrongInput('You must provide username and password');
+				const { email, password } = req.body;
+				if (!email && !password) {
+					throw wrongInput('You must provide email and password');
 				}
-				const loginInfo = await controller.login(username, password);
+				const loginInfo = await controller.login(email, password);
 				return res.json(loginInfo);
 			} catch (error) {
 				return next(tagError(error));
