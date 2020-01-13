@@ -41,7 +41,6 @@ module.exports = () => {
 		 * This endpoint allows you retrieve tickets list
 		 * @route GET /api/v1/tickets
 		 * @group Tickets - Everything about tickets
-		 * @param {file} file.formData.required - pdf file
 		 * @returns {Array.<TicketsResponse>} 200 - Successful operation
 		 * @returns {Error.model} <any> - Error message
 		 * @security JWT
@@ -56,7 +55,7 @@ module.exports = () => {
 		});
 
 		/**
-		 * This endpoint allows you retrieve tickets list
+		 * This endpoint allows you to register one ticket in the system
 		 * @route POST /api/v1/tickets/register
 		 * @group Tickets - Everything about tickets
 		 * @param {RegisterTicketRequest.model} body.body.required
@@ -78,7 +77,7 @@ module.exports = () => {
 		});
 
 		/**
-		 * This endpoint allows you retrieve tickets list
+		 * This endpoint allows you to login to the API
 		 * @route POST /api/v1/login
 		 * @group User - Everything about user
 		 * @param {LoginRequest.model} body.body.required
