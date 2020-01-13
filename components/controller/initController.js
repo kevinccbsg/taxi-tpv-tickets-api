@@ -5,9 +5,16 @@ const {
 const parse = require('date-fns/parse');
 
 const wrongInput = errorFactory(CustomErrorTypes.WRONG_INPUT);
+const forbiddenError = errorFactory(CustomErrorTypes.FORBIDDEN);
+
+const token = require('../../lib/token');
 
 module.exports = () => {
-	const start = async ({ logger, filePDF, store }) => {
+	const start = async ({
+		logger, filePDF, store, config,
+	}) => {
+		const jwt = token(config.tokenSecret);
+
 		const savePDFInfo = async (file, type = 'ibercaja') => {
 			if (!file) throw wrongInput('File is required');
 			const wasRecorded = await store.alreadyRecorded(file.name);
@@ -46,7 +53,24 @@ module.exports = () => {
 			return true;
 		};
 
-		return { savePDFInfo, getTickets, registerTicket };
+		const login = async (email, password) => {
+			logger.info(`Requesting loging for user ${email}`);
+			const user = await store.getUserByEmail(email);
+			if (password !== user.password) {
+				throw forbiddenError('User or password incorrect');
+			}
+			return {
+				jwt: jwt.signToken({ id: user._id }),
+				email: user.email,
+			};
+		};
+
+		return {
+			savePDFInfo,
+			getTickets,
+			registerTicket,
+			login,
+		};
 	};
 
 	return { start };

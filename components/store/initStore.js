@@ -4,10 +4,13 @@ const {
 } = require('error-handler-module');
 
 const wrongInput = errorFactory(CustomErrorTypes.WRONG_INPUT);
+const crypto = require('../../lib/crypto');
 
 module.exports = () => {
-	const start = async ({ mongo }) => {
+	const start = async ({ mongo, config }) => {
 		const tickets = mongo.collection('tickets');
+		const users = mongo.collection('users');
+		const { decrypt } = crypto(config.cryptoSecret, config.cryptoAlgorithm);
 		const upsertCollection = collection => (filter, body) => collection.updateOne(filter, { $set: { ...body } }, { upsert: true });
 
 		const alreadyRecorded = async name => {
@@ -32,11 +35,19 @@ module.exports = () => {
 			}
 		};
 
+		const getUserByEmail = async email => {
+			const user = await users.findOne({ email });
+			if (!user) return {};
+			const normalPassword = decrypt(user.password);
+			return { ...user, password: normalPassword };
+		};
+
 		return {
 			upsertTickets: upsertCollection(tickets),
 			alreadyRecorded,
 			getTickets,
 			registerTicket,
+			getUserByEmail,
 		};
 	};
 
