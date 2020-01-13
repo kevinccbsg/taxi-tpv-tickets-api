@@ -25,6 +25,7 @@ module.exports = () => {
 		 * @param {file} file.formData.required - pdf file
 		 * @returns {SuccessPDFResponse.model} 200 - Successful operation
 		 * @returns {Error.model} <any> - Error message
+		 * @security JWT
 		*/
 		app.post('/api/v1/tickets', authMiddleware, async (req, res, next) => {
 			try {
@@ -43,6 +44,7 @@ module.exports = () => {
 		 * @param {file} file.formData.required - pdf file
 		 * @returns {Array.<TicketsResponse>} 200 - Successful operation
 		 * @returns {Error.model} <any> - Error message
+		 * @security JWT
 		*/
 		app.get('/api/v1/tickets', authMiddleware, async (req, res, next) => {
 			try {
@@ -60,6 +62,7 @@ module.exports = () => {
 		 * @param {RegisterTicketRequest.model} body.body.required
 		 * @returns {SuccessTicketRegistered.model} 200 - Successful operation
 		 * @returns {Error.model} <any> - Error message
+		 * @security JWT
 		*/
 		app.post('/api/v1/tickets/register', authMiddleware, async (req, res, next) => {
 			try {
