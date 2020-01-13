@@ -14,12 +14,6 @@
     "qa": "npm run lint && npm run test",
     "docker": "bash -c '(docker network inspect local 2>&1 > /dev/null || docker network create local) && docker-compose --file docker/development/docker-compose.yml up -d --force-recreate'"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint",
-      "pre-push": "npm run test"
-    }
-  },
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^6.7.1",
