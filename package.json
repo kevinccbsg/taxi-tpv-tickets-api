@@ -45,6 +45,7 @@
     "cors": "^2.8.5",
     "date-fns": "^2.9.0",
     "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
     "error-handler-module": "^1.0.1",
     "express-fileupload": "^1.1.6",
     "express-swagger-generator": "^1.1.15",
