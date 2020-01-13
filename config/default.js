@@ -19,7 +19,7 @@ module.exports = {
 						title: 'taxi-tpv-tickets-api',
 						version: '1.0.0',
 					},
-					host: process.env.SERVICE_ENV || 'localhost:4000',
+					host: process.env.DOCS_HOST || 'localhost:4000',
 					basePath: '/',
 					produces: ['application/json'],
 					schemes: ['https', 'http'],
@@ -36,8 +36,8 @@ module.exports = {
 		},
 	},
 	mongo: {
-		connectionString: process.env.AZURE_COSMOSDB_CONNECTION_STRING || 'mongodb://node:node@localhost:27017/tpv-tickets',
-		contentDatabaseName: process.env.EVENTS_DATABASE_NAME || 'tpv-tickets',
+		connectionString: process.env.DB_CONNECTION_STRING || 'mongodb://node:node@localhost:27017/tpv-tickets',
+		contentDatabaseName: process.env.DATABASE_NAME || 'tpv-tickets',
 	},
 	logger: {
 		transport: 'console',

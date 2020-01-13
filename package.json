@@ -9,6 +9,7 @@
     "test-ci": "SERVICE_ENV=test mocha --reporter mocha-junit-reporter",
     "test": "SERVICE_ENV=test mocha --reporter spec './test/**/*.test.js'",
     "lint": "eslint .",
+    "load": "DEBUG=* node db/loadData.js",
     "manifest": "node_modules/make-manifest/bin/make-manifest",
     "qa": "npm run lint && npm run test",
     "docker": "bash -c '(docker network inspect local 2>&1 > /dev/null || docker network create local) && docker-compose --file docker/development/docker-compose.yml up -d --force-recreate'",
