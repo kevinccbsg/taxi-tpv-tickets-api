@@ -1,3 +1,9 @@
+const {
+	errorFactory,
+	CustomErrorTypes,
+} = require('error-handler-module');
+
+const wrongInput = errorFactory(CustomErrorTypes.WRONG_INPUT);
 
 module.exports = () => {
 	const start = async ({ mongo }) => {
@@ -17,10 +23,20 @@ module.exports = () => {
 			return ticketList;
 		};
 
+		const registerTicket = async (date, price) => {
+			const { result } = await tickets.updateOne({
+				formattedDate: date, price,
+			}, { $set: { validated: true } });
+			if (result.nModified !== 1) {
+				throw wrongInput('There was not updated this ticket');
+			}
+		};
+
 		return {
 			upsertTickets: upsertCollection(tickets),
 			alreadyRecorded,
 			getTickets,
+			registerTicket,
 		};
 	};
 

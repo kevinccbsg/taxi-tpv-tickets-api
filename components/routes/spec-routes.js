@@ -22,6 +22,17 @@
  */
 
 /**
+ * @typedef SuccessTicketRegistered
+ * @property {boolean} success.required
+ */
+
+/**
+ * @typedef RegisterTicketRequest
+ * @property {string} date.required
+ * @property {string} price.required
+ */
+
+/**
  * @typedef Error
  * @property {number} statusCode -  <span style="color: gray;font-style: italic">404</span>
  * @property {string} error -  <span style="color: gray;font-style: italic">example: Error description message</span>

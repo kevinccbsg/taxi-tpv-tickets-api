@@ -40,7 +40,13 @@ module.exports = () => {
 			return tickets;
 		};
 
-		return { savePDFInfo, getTickets };
+		const registerTicket = async (date, price) => {
+			logger.info(`Registering ticket with date ${date} and price ${price}`);
+			store.registerTicket(date, price);
+			return true;
+		};
+
+		return { savePDFInfo, getTickets, registerTicket };
 	};
 
 	return { start };
