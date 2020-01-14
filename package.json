@@ -6,7 +6,7 @@
   "scripts": {
     "local": "SERVICE_ENV=local node index.js",
     "start": "node index.js",
-    "test-ci": "SERVICE_ENV=test mocha --reporter mocha-junit-reporter",
+    "test-ci": "SERVICE_ENV=ci mocha --reporter mocha-junit-reporter",
     "test": "SERVICE_ENV=test mocha --reporter spec './test/**/*.test.js'",
     "lint": "eslint .",
     "load": "DEBUG=* node db/loadData.js",
