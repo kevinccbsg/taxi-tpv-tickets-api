@@ -32,7 +32,7 @@ jobs:
           name: test
           command: npm run test-ci
           environment:
-            CRYPTO_SECRET: circlesecret
-            CRYPTO_ALGORITHM: aes-128-ccm
+            CRYPTO_SECRET: circlecitestcirclecitestcircleci
+            CRYPTO_ALGORITHM: aes-192-cbc
             TOKEN_SECRET: circlesecret
             SERVICE_ENV: ci
