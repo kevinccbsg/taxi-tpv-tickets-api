@@ -32,7 +32,7 @@ jobs:
           name: test
           command: npm run test-ci
           environment:
-            CRYPTO_SECRET: "$CRYPTO_SECRET}"
-            CRYPTO_ALGORITHM: "$CRYPTO_ALGORITHM"
-            TOKEN_SECRET: "$TOKEN_SECRET"
+            CRYPTO_SECRET: circlesecret
+            CRYPTO_ALGORITHM: aes-128-ccm
+            TOKEN_SECRET: circlesecret
             SERVICE_ENV: ci
