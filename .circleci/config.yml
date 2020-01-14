@@ -35,3 +35,4 @@ jobs:
             CRYPTO_SECRET: $CRYPTO_SECRET
             CRYPTO_ALGORITHM: $CRYPTO_ALGORITHM
             TOKEN_SECRET: $TOKEN_SECRET
+            SERVICE_ENV: ci
