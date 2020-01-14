@@ -28,12 +28,6 @@ jobs:
       - run: # run linter
           name: lint
           command: npm run lint
-      - run:
-          name: "is env working?"
-          command: echo $TOKEN_SECRET
-      - run:
-          name: "is env working?"
-          command: echo $CRYPTO_ALGORITHM
       - run: # run tests
           name: test
           command: npm run test-ci

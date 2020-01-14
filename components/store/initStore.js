@@ -8,6 +8,7 @@ const crypto = require('../../lib/crypto');
 
 module.exports = () => {
 	const start = async ({ mongo, config }) => {
+    console.log(config); // eslint-disable-line
 		const tickets = mongo.collection('tickets');
 		const users = mongo.collection('users');
 		const { decrypt, encrypt } = crypto(config.cryptoSecret, config.cryptoAlgorithm);
