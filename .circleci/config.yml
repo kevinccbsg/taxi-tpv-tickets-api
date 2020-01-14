@@ -31,3 +31,7 @@ jobs:
       - run: # run tests
           name: test
           command: npm run test-ci
+          environment:
+            CRYPTO_SECRET: $CRYPTO_SECRET
+            CRYPTO_ALGORITHM: $CRYPTO_ALGORITHM
+            TOKEN_SECRET: $TOKEN_SECRET
