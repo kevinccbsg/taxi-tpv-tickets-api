@@ -12,6 +12,7 @@ module.exports = {
 	},
 	routes: {
 		admin: {
+			whitelist: [process.env.APP_HOST],
 			swaggerOptions: {
 				swaggerDefinition: {
 					info: {
@@ -31,6 +32,12 @@ module.exports = {
 							description: '',
 						},
 					},
+				},
+				basedir: process.cwd(), // app absolute path
+				files: ['./**/**-routes.js'], // path to the API handle folder, related to basedir
+				route: {
+					url: '/api-docs',
+					docs: '/api-docs.json',
 				},
 			},
 		},
