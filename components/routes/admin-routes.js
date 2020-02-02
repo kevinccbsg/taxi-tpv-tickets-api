@@ -7,7 +7,9 @@ const fileUpload = require('express-fileupload');
 const unauthorizedError = errorFactory(CustomErrorTypes.UNAUTHORIZED);
 
 module.exports = () => {
-	const start = async ({ manifest = {}, app, config }) => {
+	const start = async ({
+		manifest = {}, app, config, logger,
+	}) => {
 		const { swaggerOptions } = config;
 
 		const { whitelist } = config;
@@ -16,6 +18,7 @@ module.exports = () => {
 				if (whitelist.indexOf(origin) !== -1) {
 					return callback(null, true);
 				}
+				logger.error(`CORS error for this origin ${origin}`);
 				return callback(unauthorizedError('Not allowed by CORS'));
 			},
 		};
