@@ -12,7 +12,7 @@ module.exports = {
 	},
 	routes: {
 		admin: {
-			whitelist: [process.env.APP_HOST],
+			whitelist: [process.env.APP_HOST, `https://${process.env.DOCS_HOST}`],
 			swaggerOptions: {
 				swaggerDefinition: {
 					info: {
