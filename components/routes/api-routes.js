@@ -70,7 +70,7 @@ module.exports = () => {
 		app.post('/api/v1/tickets/register', authMiddleware, async (req, res, next) => {
 			try {
 				const { date, price } = req.body;
-				if (!date && !price) {
+				if (!date || !price) {
 					throw wrongInput('You must provide date and price');
 				}
 				await controller.registerTicket(date, price);
