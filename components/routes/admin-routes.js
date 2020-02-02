@@ -15,7 +15,7 @@ module.exports = () => {
 		const { whitelist } = config;
 		const corsOptions = {
 			origin: (origin, callback) => {
-				if (whitelist.indexOf(origin) !== -1) {
+				if (whitelist.indexOf(origin) !== -1 || !origin) {
 					return callback(null, true);
 				}
 				logger.error(`CORS error for this origin ${origin}`);
