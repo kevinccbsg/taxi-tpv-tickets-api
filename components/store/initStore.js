@@ -3,7 +3,7 @@ const {
 	CustomErrorTypes,
 } = require('error-handler-module');
 
-const wrongInput = errorFactory(CustomErrorTypes.WRONG_INPUT);
+const wrongInput = errorFactory(CustomErrorTypes.NOT_FOUND);
 const crypto = require('../../lib/crypto');
 
 module.exports = () => {

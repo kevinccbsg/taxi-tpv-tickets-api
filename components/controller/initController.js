@@ -51,8 +51,7 @@ module.exports = () => {
 
 		const registerTicket = async (date, price) => {
 			logger.info(`Registering ticket with date ${date} and price ${price}`);
-			store.registerTicket(date, price);
-			return true;
+			return store.registerTicket(date, price);
 		};
 
 		const login = async (email, password) => {

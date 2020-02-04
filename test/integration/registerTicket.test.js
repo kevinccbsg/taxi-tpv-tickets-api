@@ -5,7 +5,7 @@ const system = require('../../system');
 const fileMock = require('../mocks/fileMock');
 const getAuthToken = require('../mocks/getAuthToken');
 
-describe('POST endpoints', () => {
+describe('Register ticket', () => {
 	let request;
 	let sys = system();
 	sys = sys.set('filePDF', fileMock()).dependsOn();
@@ -32,6 +32,19 @@ describe('POST endpoints', () => {
 	});
 
 	after(() => sys.stop());
+
+	it('should return 404 when there is no ticket', () => request
+		.post('/api/v1/tickets')
+		.set('Authorization', jwt)
+		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
+		.expect(200)
+		.then(() => request.post('/api/v1/tickets/register')
+			.set('Authorization', jwt)
+			.send({
+				date: '13-12-2019',
+				price: '9999,6',
+			})
+			.expect(404)));
 
 	it('should register a ticket after calling POST /api/v1/tickets', () => request
 		.post('/api/v1/tickets')
