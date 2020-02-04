@@ -17,30 +17,32 @@ module.exports = () => {
 
 		const isVerified = authorization => jwt.verifyToken(authorization);
 
+		const updateTicket = pdfName => async ticket => {
+			const dbTicket = await store.getTicket(ticket);
+			const ticketExists = !!dbTicket;
+			let query = {
+				formattedDate: ticket.formattedDate,
+				price: ticket.price,
+			};
+			query = ticketExists ? { ...query, pdfName: config.registerPdfName } : { ...query, hour: ticket.hour };
+			await store.upsertTickets(query, {
+				...ticket,
+				pdfName,
+				validated: ticketExists,
+				date: parse(ticket.formattedDate, 'dd-MM-yyyy', new Date()),
+			});
+		};
+
 		const savePDFInfo = async (file, type = 'ibercaja') => {
 			if (!file) throw wrongInput('File is required');
 			const wasRecorded = await store.alreadyRecorded(file.name);
 			if (wasRecorded) throw wrongInput('This File was already recorded');
 			const ibercajaInfo = filePDF.pdfParser(type);
 			logger.info(`Parsing ${file.name} of ${type} type`);
-			const parsedInfo = await ibercajaInfo(file.data, file.name);
-			const tickets = parsedInfo.data.map(ticket => ({
-				...ticket,
-				pdfName: file.name,
-				validated: false,
-			}));
-			const ticketsPromises = tickets.map(ticket => (
-				store.upsertTickets({
-					formattedDate: ticket.formattedDate,
-					hour: ticket.hour,
-					price: ticket.price,
-				}, {
-					...ticket,
-					date: parse(ticket.formattedDate, 'dd-MM-yyyy', new Date()),
-				})
-			));
+			const { data: tickets } = await ibercajaInfo(file.data, file.name);
+			const ticketsPromises = tickets.map(updateTicket(file.name));
 			await Promise.all(ticketsPromises);
-			return parsedInfo.data;
+			return tickets;
 		};
 
 		const getTickets = async () => {
@@ -51,7 +53,22 @@ module.exports = () => {
 
 		const registerTicket = async (date, price) => {
 			logger.info(`Registering ticket with date ${date} and price ${price}`);
-			return store.registerTicket(date, price);
+			const dbTicket = await store.getTicket({ formattedDate: date, price });
+			const ticketExists = !!dbTicket;
+			if (ticketExists) {
+				logger.info('Registering when exists');
+				return store.registerTicket(date, price);
+			}
+			const query = {
+				formattedDate: date,
+				price,
+				pdfName: config.registerPdfName,
+			};
+			logger.info('Registering when it is new ticket');
+			return store.upsertTickets(query, {
+				...query,
+				validated: false,
+			});
 		};
 
 		const login = async (email, password) => {
