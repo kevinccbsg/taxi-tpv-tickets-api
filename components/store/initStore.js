@@ -38,7 +38,7 @@ module.exports = () => {
 
 		const registerTicket = async (date, price) => {
 			const { result } = await tickets.updateOne({
-				formattedDate: date, price,
+				formattedDate: date, price, validated: false,
 			}, { $set: { validated: true } });
 			if (result.nModified !== 1) {
 				throw notFound('There was not updated this ticket');

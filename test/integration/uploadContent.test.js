@@ -79,7 +79,7 @@ describe('Upload endpoints', () => {
 			.then(async response => {
 				expect(response.headers['content-type']).to.equal('application/json; charset=utf-8');
 				const tickets = await ticket.find({}).toArray();
-				expect(tickets).to.have.length(4);
+				expect(tickets).to.have.length(5);
 				const validatedTickets = tickets.filter(({ validated }) => validated);
 				expect(validatedTickets).to.have.length(1);
 				expect(validatedTickets[0].pdfName).to.eql('file-mock.txt');

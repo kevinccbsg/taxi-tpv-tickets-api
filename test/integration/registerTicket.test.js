@@ -63,7 +63,7 @@ describe('Register ticket', () => {
 			})
 			.expect(400)));
 
-	it('should return 404 when there is no ticket', () => request
+	it('should return 200 when there is no ticket and add it', () => request
 		.post('/api/v1/tickets')
 		.set('Authorization', jwt)
 		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
@@ -77,7 +77,7 @@ describe('Register ticket', () => {
 			.expect(200))
 		.then(async () => {
 			const result = await ticket.find({}).toArray();
-			expect(result).to.have.length(5);
+			expect(result).to.have.length(6);
 			const newTicket = await ticket.findOne({
 				formattedDate: '13-12-2019',
 				price: '9999,6',
@@ -105,5 +105,35 @@ describe('Register ticket', () => {
 				price: '2,6',
 			});
 			expect(validated).to.eql(true);
+		}));
+
+	it('should register two tickets with the same value both tickets after two calls', () => request
+		.post('/api/v1/tickets')
+		.set('Authorization', jwt)
+		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
+		.expect(200)
+		.then(() => request.post('/api/v1/tickets/register')
+			.set('Authorization', jwt)
+			.send({
+				date: '14-11-2019',
+				price: '7,6',
+			})
+			.expect(200))
+		.then(() => request.post('/api/v1/tickets/register')
+			.set('Authorization', jwt)
+			.send({
+				date: '14-11-2019',
+				price: '7,6',
+			})
+			.expect(200))
+		.then(async ({ body }) => {
+			expect(body.success).to.eql(true);
+			const tickets = await ticket.find({
+				formattedDate: '14-11-2019',
+				price: '7,6',
+			}).toArray();
+			tickets.forEach(({ validated }) => {
+				expect(validated).to.eql(true);
+			});
 		}));
 });

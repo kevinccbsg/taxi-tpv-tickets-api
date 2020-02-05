@@ -63,6 +63,7 @@ module.exports = () => {
 				formattedDate: date,
 				price,
 				pdfName: config.registerPdfName,
+				validated: false,
 			};
 			logger.info('Registering when it is new ticket');
 			return store.upsertTickets(query, {
