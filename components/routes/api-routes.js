@@ -6,6 +6,8 @@ const {
 	CustomErrorTypes,
 } = require('error-handler-module');
 
+const { isValidPrice, isValidFormatDate } = require('../../lib/validator');
+
 const wrongInput = errorFactory(CustomErrorTypes.WRONG_INPUT);
 
 module.exports = () => {
@@ -72,6 +74,12 @@ module.exports = () => {
 				const { date, price } = req.body;
 				if (!date || !price) {
 					throw wrongInput('You must provide date and price');
+				}
+				if (!isValidPrice(price)) {
+					throw wrongInput('You must provide a valid price');
+				}
+				if (!isValidFormatDate(date)) {
+					throw wrongInput('You must provide a valid date');
 				}
 				await controller.registerTicket(date, price);
 				return res.json({ success: true });

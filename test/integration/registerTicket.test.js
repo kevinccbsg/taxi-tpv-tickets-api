@@ -37,6 +37,32 @@ describe('Register ticket', () => {
 
 	after(() => sys.stop());
 
+	it('should send 400 when date input is wrong', () => request
+		.post('/api/v1/tickets')
+		.set('Authorization', jwt)
+		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
+		.expect(200)
+		.then(() => request.post('/api/v1/tickets/register')
+			.set('Authorization', jwt)
+			.send({
+				date: '13-12-2019asd',
+				price: '9999,6',
+			})
+			.expect(400)));
+
+	it('should send 400 when price input is wrong', () => request
+		.post('/api/v1/tickets')
+		.set('Authorization', jwt)
+		.attach('file', path.join(__dirname, '..', 'fixtures', 'file-mock.txt'))
+		.expect(200)
+		.then(() => request.post('/api/v1/tickets/register')
+			.set('Authorization', jwt)
+			.send({
+				date: '13-12-2019',
+				price: '9999,6asd',
+			})
+			.expect(400)));
+
 	it('should return 404 when there is no ticket', () => request
 		.post('/api/v1/tickets')
 		.set('Authorization', jwt)
