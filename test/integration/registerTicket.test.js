@@ -84,6 +84,9 @@ describe('Register ticket', () => {
 			});
 			expect(newTicket.validated).to.eql(false);
 			expect(newTicket.pdfName).to.eql(appConfig.controller.registerPdfName);
+			return request.get('/api/v1/tickets')
+				.set('Authorization', jwt)
+				.expect(200);
 		}));
 
 	it('should register a ticket after calling POST /api/v1/tickets', () => request

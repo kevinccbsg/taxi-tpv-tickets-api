@@ -68,6 +68,7 @@ module.exports = () => {
 			logger.info('Registering when it is new ticket');
 			return store.upsertTickets(query, {
 				...query,
+				date: parse(query.formattedDate, 'dd-MM-yyyy', new Date()),
 				validated: false,
 			});
 		};
