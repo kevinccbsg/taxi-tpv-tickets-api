@@ -44,7 +44,7 @@ describe('GET endpoints', () => {
 			.expect(200))
 		.then(({ body: tickets }) => {
 			tickets.forEach(ticketItem => {
-				expect(ticketItem).not.to.have.property('_id');
+				expect(ticketItem).to.have.property('id');
 				expect(ticketItem).to.have.property('validated');
 				expect(ticketItem.validated).to.eql(false);
 				expect(ticketItem).to.have.property('pdfName');

@@ -21,10 +21,17 @@ module.exports = () => {
 
 		const getTickets = async () => {
 			const ticketList = await tickets.find({}, {
-				projection: { _id: 0 },
 				sort: [['date', -1]],
 			}).toArray();
-			return ticketList;
+			return ticketList.map(ticket => ({
+				id: ticket._id.toString(),
+				formattedDate: ticket.formattedDate,
+				date: ticket.date,
+				hour: ticket.hour,
+				price: ticket.price,
+				pdfName: ticket.pdfName,
+				validated: ticket.validated,
+			}));
 		};
 
 		const getTicket = async ({ formattedDate, price }) => {

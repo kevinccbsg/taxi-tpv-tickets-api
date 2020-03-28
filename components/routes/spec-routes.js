@@ -8,6 +8,7 @@
 
 /**
  * @typedef TicketsResponse
+ * @property {string} id.required
  * @property {string} formattedDate.required
  * @property {object} date.required
  * @property {string} hour
