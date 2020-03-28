@@ -6,6 +6,7 @@ const parse = require('date-fns/parse');
 
 const wrongInput = errorFactory(CustomErrorTypes.WRONG_INPUT);
 const forbiddenError = errorFactory(CustomErrorTypes.FORBIDDEN);
+const notFoundError = errorFactory(CustomErrorTypes.NOT_FOUND);
 
 const token = require('../../lib/token');
 
@@ -85,12 +86,22 @@ module.exports = () => {
 			};
 		};
 
+		const deleteTicket = async id => {
+			logger.info(`Requesting delete ticket with id ${id}`);
+			const { value: ticket } = await store.deleteTicketById(id);
+			if (!ticket) {
+				throw notFoundError('Ticket not found');
+			}
+			return ticket;
+		};
+
 		return {
 			savePDFInfo,
 			getTickets,
 			registerTicket,
 			login,
 			isVerified,
+			deleteTicket,
 		};
 	};
 

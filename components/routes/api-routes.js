@@ -109,6 +109,24 @@ module.exports = () => {
 			}
 		});
 
+		/**
+		 * This endpoint delete one ticket
+		 * @route DELETE /api/v1/tickets/:id
+		 * @group Tickets - Everything about tickets
+		 * @param {string} id.path.required
+		 * @returns {DeletedTicket.model} 200 - Successful operation
+		 * @returns {Error.model} <any> - Error message
+		 * @security JWT
+		*/
+		app.delete('/api/v1/tickets/:id', authMiddleware, async (req, res, next) => {
+			try {
+				const ticket = await controller.deleteTicket(req.params.id);
+				return res.json(ticket);
+			} catch (error) {
+				return next(tagError(error));
+			}
+		});
+
 		app.use(handleHttpError(logger));
 		return Promise.resolve();
 	};
