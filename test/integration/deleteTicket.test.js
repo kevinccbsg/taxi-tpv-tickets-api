@@ -37,6 +37,7 @@ describe('DELETE endpoint', () => {
 
 	it('Shoulb be return a deleted ticket', () => {
 		let expectedTicket;
+		let expectedTickets;
 		return request
 			.post('/api/v1/tickets')
 			.set('Authorization', jwt)
@@ -44,11 +45,16 @@ describe('DELETE endpoint', () => {
 			.expect(200)
 			.then(async () => {
 				expectedTicket = await ticket.findOne({});
+				expectedTickets = await ticket.find({}).toArray();
 				expectedTicket = JSON.parse(JSON.stringify(expectedTicket));
 				return request.delete(`/api/v1/tickets/${expectedTicket._id}`)
 					.set('Authorization', jwt)
 					.expect(200);
 			})
-			.then(({ body }) => expect(body).to.eql(expectedTicket));
+			.then(async ({ body }) => {
+				expect(body).to.eql(expectedTicket);
+				const tickets = await ticket.find({}).toArray();
+				expect(tickets).to.have.length(expectedTickets.length - 1);
+			});
 	});
 });
