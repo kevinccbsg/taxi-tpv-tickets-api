@@ -5,6 +5,7 @@ const {
 
 const notFound = errorFactory(CustomErrorTypes.NOT_FOUND);
 const crypto = require('../../lib/crypto');
+const { createObjectID } = require('../../lib/mongoUtils');
 
 module.exports = () => {
 	const start = async ({ mongo, config }) => {
@@ -64,6 +65,11 @@ module.exports = () => {
 			return { email: user.email };
 		};
 
+		const deleteTicketById = async id => {
+			const ticket = await tickets.findOneAndDelete({ _id: createObjectID(id) });
+			return ticket;
+		};
+
 		return {
 			upsertTickets: upsertCollection(tickets),
 			getTicket,
@@ -72,6 +78,7 @@ module.exports = () => {
 			registerTicket,
 			getUserByEmail,
 			registerUser,
+			deleteTicketById,
 		};
 	};
 
