@@ -1,0 +1,43 @@
+name: Development CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    if: ${{ github.ref != 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.8]
+        mongodb-version: [3.6]
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Start MongoDB
+      uses: supercharge/mongodb-github-action@1.3.0
+      with:
+        mongodb-version: ${{ matrix.mongodb-version }}
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Backend Linter
+      run: npm run lint
+
+    - run: npm run test
+      env:
+        CRYPTO_SECRET: actioncitestactioncitestactionci
+        CRYPTO_ALGORITHM: aes-192-cbc
+        TOKEN_SECRET: actionsecret
+        SERVICE_ENV: ci
