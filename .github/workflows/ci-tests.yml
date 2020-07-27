@@ -106,7 +106,7 @@ jobs:
       run: |
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
         cat deployment/kustomization.yml
-        cat <<EOF >>deployment/kustomization.yaml
+        cat <<EOF >>deployment/kustomization.yml
         secretGenerator:
         - name: tpv-backend-secret
           literals:
