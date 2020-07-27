@@ -1,0 +1,62 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "tpv-backend"
+  namespace: "development"
+  labels:
+    app: "tpv-backend"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "tpv-backend"
+  template:
+    metadata:
+      labels:
+        app: "tpv-backend"
+    spec:
+      containers:
+      - name: "tpv-backend-sha256-1"
+        image: "eu.gcr.io/bngo-app/tpv-backend"
+        env:
+        - name: DB_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              key: DB_CONNECTION_STRING
+              name: tpv-backend-api-secret
+        - name: TOKEN_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: TOKEN_SECRET
+              name: tpv-backend-api-secret
+        - name: CRYPTO_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: CRYPTO_SECRET
+              name: tpv-backend-api-secret
+        - name: CRYPTO_ALGORITHM
+          valueFrom:
+            secretKeyRef:
+              key: CRYPTO_ALGORITHM
+              name: tpv-backend-api-secret
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "tpv-backend-hpa-vg94"
+  namespace: "development"
+  labels:
+    app: "tpv-backend"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "tpv-backend"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80

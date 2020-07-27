@@ -5,7 +5,7 @@ metadata:
   namespace: development
 spec:
   ports:
-  - port: 3306
+  - port: 27017
   selector:
     app: mongodb
   clusterIP: None
@@ -43,5 +43,5 @@ spec:
               name: tpv-backend-secret
               key: MONGO_INITDB_ROOT_PASSWORD
         ports:
-        - containerPort: 3306
+        - containerPort: 27017
           name: mongodb

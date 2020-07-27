@@ -100,6 +100,10 @@ jobs:
         secrets: |-
           dbUsername:${{ secrets.GKE_PROJECT }}/DEV_DB_USERNAME
           dbPassword:${{ secrets.GKE_PROJECT }}/DEV_DB_PASSWORD
+          dbName:${{ secrets.GKE_PROJECT }}/DATABASE_NAME
+          cryptoSecret:${{ secrets.GKE_PROJECT }}/CRYPTO_SECRET
+          cryptoAlgorithm:${{ secrets.GKE_PROJECT }}/CRYPTO_ALGORITHM
+          tokenSecret:${{ secrets.GKE_PROJECT }}/DEV_TOKEN_SECRET
 
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
@@ -109,12 +113,22 @@ jobs:
         cat <<EOF >>deployment/kustomization.yml
         namespace: development
         EOF
+        echo "adding database secrets"
         cat <<EOF >>deployment/kustomization.yml
         secretGenerator:
         - name: tpv-backend-secret
           literals:
           - MONGO_INITDB_ROOT_USERNAME=${{ steps.secrets.outputs.dbUsername }}
           - MONGO_INITDB_ROOT_PASSWORD=${{ steps.secrets.outputs.dbPassword }}
+        EOF
+        echo "adding api secrets"
+        cat <<EOF >>deployment/kustomization.yml
+        - name: tpv-backend-api-secret
+          literals:
+          - DB_CONNECTION_STRING=mongodb://${{ steps.secrets.outputs.dbUsername }}:${{ steps.secrets.outputs.dbPassword }}@mongodb:27017/${{ steps.secrets.outputs.dbName }}
+          - CRYPTO_SECRET=${{ steps.secrets.outputs.cryptoSecret }}
+          - TOKEN_SECRET=${{ steps.secrets.outputs.tokenSecret }}
+          - CRYPTO_ALGORITHM=${{ steps.secrets.outputs.cryptoAlgorithm }}
         EOF
         ./kustomize build deployment
         ./kustomize build deployment | kubectl apply -f -
