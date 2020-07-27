@@ -70,17 +70,48 @@ jobs:
         service_account_key: ${{ secrets.GKE_KEY }}
 
     # Configure docker to use the gcloud command-line tool as a credential helper
-    - run: |
-        # Set up docker to authenticate
-        # via gcloud command-line tool.
-        gcloud auth configure-docker
+    # - run: |
+    #     # Set up docker to authenticate
+    #     # via gcloud command-line tool.
+    #     gcloud auth configure-docker
 
-    - name: Build
-      run: |
-        docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"$GITHUB_SHA" \
-          --build-arg GITHUB_SHA="$GITHUB_SHA" .
+    # - name: Build
+    #   run: |
+    #     docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"$GITHUB_SHA" \
+    #       --build-arg GITHUB_SHA="$GITHUB_SHA" .
 
-    # Push the Docker image to Google Container Registry
-    - name: Publish
+    # # Push the Docker image to Google Container Registry
+    # - name: Publish
+    #   run: |
+    #     docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
+
+    # Set up kustomize
+    - name: Set up Kustomize
       run: |
-        docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+        chmod u+x ./kustomize
+        ./kustomize version
+
+    # Get secrets from vault
+    - id: secrets
+      uses: GoogleCloudPlatform/github-actions/get-secretmanager-secrets@master
+      with:
+        secrets: |-
+          dbUsername:$GKE_PROJECT/DEV_DB_USERNAME
+          dbPassword:$GKE_PROJECT/DEV_DB_PASSWORD
+
+    # Deploy the Docker image to the GKE cluster
+    - name: Deploy
+      run: |
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+        cat deployment/kustomization.yml
+        cat <<EOF >deployment/kustomization.yaml
+        secretGenerator:
+        - name: tpv-backend-secret
+          literals:
+          - MONGO_INITDB_ROOT_USERNAME=${{ steps.secrets.outputs.dbUsername }}
+          - MONGO_INITDB_ROOT_PASSWORD=${{ steps.secrets.outputs.dbPassword }}
+        EOF
+        ./kustomize build deployment
+        ./kustomize build deployment | kubectl apply -f -
+        kubectl get services -o wide
