@@ -98,8 +98,8 @@ jobs:
       uses: GoogleCloudPlatform/github-actions/get-secretmanager-secrets@master
       with:
         secrets: |-
-          dbUsername:$GKE_PROJECT/DEV_DB_USERNAME
-          dbPassword:$GKE_PROJECT/DEV_DB_PASSWORD
+          dbUsername:${{ secrets.GKE_PROJECT }}/DEV_DB_USERNAME
+          dbPassword:${{ secrets.GKE_PROJECT }}/DEV_DB_PASSWORD
 
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
