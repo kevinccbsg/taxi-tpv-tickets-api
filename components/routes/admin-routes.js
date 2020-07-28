@@ -1,28 +1,28 @@
-const { errorFactory, CustomErrorTypes } = require('error-handler-module');
+// const { errorFactory, CustomErrorTypes } = require('error-handler-module');
 const expressJSDocSwagger = require('express-jsdoc-swagger');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
-const unauthorizedError = errorFactory(CustomErrorTypes.UNAUTHORIZED);
+// const unauthorizedError = errorFactory(CustomErrorTypes.UNAUTHORIZED);
 
 module.exports = () => {
 	const start = async ({
-		manifest = {}, app, config, logger,
+		manifest = {}, app, config,
 	}) => {
 		const { swaggerOptions } = config;
 
-		const { whitelist } = config;
-		const corsOptions = {
-			origin: (origin, callback) => {
-				if (whitelist.indexOf(origin) !== -1 || !origin) {
-					return callback(null, true);
-				}
-				logger.error(`CORS error for this origin ${origin}`);
-				return callback(unauthorizedError('Not allowed by CORS'));
-			},
-		};
-		app.use(cors(corsOptions));
+		// const { whitelist } = config;
+		// const corsOptions = {
+		// 	origin: (origin, callback) => {
+		// 		if (whitelist.indexOf(origin) !== -1 || !origin) {
+		// 			return callback(null, true);
+		// 		}
+		// 		logger.error(`CORS error for this origin ${origin}`);
+		// 		return callback(unauthorizedError('Not allowed by CORS'));
+		// 	},
+		// };
+		app.use(cors());
 		app.use(bodyParser.urlencoded({ extended: true }));
 		app.use(bodyParser.json());
 		app.use(fileUpload());
