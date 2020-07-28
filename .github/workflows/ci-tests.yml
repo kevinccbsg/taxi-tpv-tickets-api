@@ -138,6 +138,5 @@ jobs:
           - TOKEN_SECRET=${{ steps.secrets.outputs.tokenSecret }}
           - CRYPTO_ALGORITHM=${{ steps.secrets.outputs.cryptoAlgorithm }}
         EOF
-        ./kustomize build deployment
         ./kustomize build deployment | kubectl apply -f -
         kubectl get services -o wide
