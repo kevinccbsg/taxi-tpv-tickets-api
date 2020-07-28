@@ -11,7 +11,7 @@ module.exports = () => {
 				{ useUnifiedTopology: true },
 			);
 			const db = client.db(contentDatabaseName);
-
+			logger.info('mongodb connected...');
 			return db;
 		} catch (err) {
 			logger.error(err);
