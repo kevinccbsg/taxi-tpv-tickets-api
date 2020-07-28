@@ -19,6 +19,12 @@ spec:
       containers:
       - name: "tpv-backend-sha256-1"
         image: "eu.gcr.io/bngo-app/tpv-backend"
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /__/manifest
+            port: http
+          initialDelaySeconds: 5
         env:
         - name: DB_CONNECTION_STRING
           valueFrom:
