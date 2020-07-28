@@ -132,7 +132,8 @@ jobs:
         cat <<EOF >>deployment/kustomization.yml
         - name: tpv-backend-api-secret
           literals:
-          - DB_CONNECTION_STRING=mongodb://${{ steps.secrets.outputs.dbUsername }}:${{ steps.secrets.outputs.dbPassword }}@mongodb:27017/${{ steps.secrets.outputs.dbName }}
+          - DB_CONNECTION_STRING=mongodb://${{ steps.secrets.outputs.dbUsername }}:${{ steps.secrets.outputs.dbPassword }}@mongodb:27017
+          - DATABASE_NAME=${{ steps.secrets.outputs.dbName }}
           - CRYPTO_SECRET=${{ steps.secrets.outputs.cryptoSecret }}
           - TOKEN_SECRET=${{ steps.secrets.outputs.tokenSecret }}
           - CRYPTO_ALGORITHM=${{ steps.secrets.outputs.cryptoAlgorithm }}
