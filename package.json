@@ -44,7 +44,6 @@
     "express-jsdoc-swagger": "^1.0.3",
     "hogan.js": "^3.0.2",
     "jsonwebtoken": "^8.5.1",
-    "make-manifest": "^1.0.1",
     "mongodb": "^3.5.7",
     "on-headers": "^1.0.2",
     "optimist": "^0.6.1",
