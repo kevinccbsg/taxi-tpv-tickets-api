@@ -109,13 +109,13 @@ jobs:
     - name: Deploy
       run: |
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
-        cd deployment && ../kustomize edit set image $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_SHA} && cd ..
+        cd deployment && ../kustomize edit set image $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:$GITHUB_SHA && cd ..
         cat deployment/kustomization.yml
         echo "add 2 replicas"
         cat <<EOF >>deployment/kustomization.yml
         replicas:
         - name: $DEPLOYMENT_NAME
-          count: 2
+          count: 1
         EOF
         cat <<EOF >>deployment/kustomization.yml
         namespace: development
