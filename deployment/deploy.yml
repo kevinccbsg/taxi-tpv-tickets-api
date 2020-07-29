@@ -1,4 +1,3 @@
----
 apiVersion: "apps/v1"
 kind: "Deployment"
 metadata:
@@ -41,23 +40,3 @@ spec:
             secretKeyRef:
               key: CRYPTO_ALGORITHM
               name: tpv-backend-api-secret
----
-apiVersion: "autoscaling/v2beta1"
-kind: "HorizontalPodAutoscaler"
-metadata:
-  name: "tpv-backend-hpa-vg94"
-  namespace: "development"
-  labels:
-    app: "tpv-backend"
-spec:
-  scaleTargetRef:
-    kind: "Deployment"
-    name: "tpv-backend"
-    apiVersion: "apps/v1"
-  minReplicas: 1
-  maxReplicas: 5
-  metrics:
-  - type: "Resource"
-    resource:
-      name: "cpu"
-      targetAverageUtilization: 80
