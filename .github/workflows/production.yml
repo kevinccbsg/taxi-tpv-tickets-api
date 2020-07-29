@@ -1,0 +1,104 @@
+name: Publish production
+
+on:
+  release:
+    types: [published]
+
+# Environment variables available to all jobs and steps in this workflow
+env:
+  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
+  GITHUB_SHA: ${{ github.sha }}
+  GKE_ZONE: europe-west1-c
+  IMAGE: tpv-backend
+  REGISTRY_HOSTNAME: eu.gcr.io
+  DEPLOYMENT_NAME: tpv-backend
+  GKE_CLUSTER: tpv-gke-cluster
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    name: Build Publish image, and Deploy Prod environment
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GKE_EMAIL }}
+        service_account_key: ${{ secrets.GKE_KEY }}
+        export_default_credentials: true
+
+    # Configure docker to use the gcloud command-line tool as a credential helper
+    - run: |
+        # Set up docker to authenticate
+        # via gcloud command-line tool.
+        gcloud auth configure-docker
+
+    - name: Build
+      run: |
+        docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" .
+
+    # Push the Docker image to Google Container Registry
+    - name: Publish
+      run: |
+        docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
+
+    # Set up kustomize
+    - name: Set up Kustomize
+      run: |
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+        chmod u+x ./kustomize
+        ./kustomize version
+
+    # Get secrets from vault
+    - id: secrets
+      uses: GoogleCloudPlatform/github-actions/get-secretmanager-secrets@master
+      with:
+        secrets: |-
+          dbConnection:${{ secrets.GKE_PROJECT }}/PROD_DB_CONNECTION
+          dbName:${{ secrets.GKE_PROJECT }}/PROD_DATABASE_NAME
+          cryptoSecret:${{ secrets.GKE_PROJECT }}/CRYPTO_SECRET
+          cryptoAlgorithm:${{ secrets.GKE_PROJECT }}/CRYPTO_ALGORITHM
+          tokenSecret:${{ secrets.GKE_PROJECT }}/PROD_TOKEN_SECRET
+
+    # Deploy the Docker image to the GKE cluster
+    - name: Deploy
+      run: |
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+        cd deployment && ../kustomize edit set image $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_SHA} && cd ..
+        echo "remove mongodb.yml"
+        sed -i 's/- mongodb.yml//' deployment/kustomization.yml
+        cat deployment/kustomization.yml
+        echo "add 2 replicas"
+        cat <<EOF >>deployment/kustomization.yml
+        replicas:
+        - name: $DEPLOYMENT_NAME
+          count: 3
+        EOF
+        cat <<EOF >>deployment/kustomization.yml
+        namespace: production
+        EOF
+        echo "adding database secrets"
+        cat <<EOF >>deployment/kustomization.yml
+        secretGenerator:
+        - name: tpv-backend-secret
+          literals:
+          - DB_CONNECTION_STRING=${{ steps.secrets.outputs.dbConnection }}
+        EOF
+        echo "adding api secrets"
+        cat <<EOF >>deployment/kustomization.yml
+        - name: tpv-backend-api-secret
+          literals:
+          - DB_CONNECTION_STRING=${{ steps.secrets.outputs.dbConnection }}
+          - DATABASE_NAME=${{ steps.secrets.outputs.dbName }}
+          - CRYPTO_SECRET=${{ steps.secrets.outputs.cryptoSecret }}
+          - TOKEN_SECRET=${{ steps.secrets.outputs.tokenSecret }}
+          - CRYPTO_ALGORITHM=${{ steps.secrets.outputs.cryptoAlgorithm }}
+        EOF
+        ./kustomize build deployment | kubectl apply -f -
+        kubectl get services -o wide
