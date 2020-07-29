@@ -17,11 +17,10 @@ metadata:
   name: mongodb
   namespace: development
 spec:
+  serviceName: mongodb
   selector:
     matchLabels:
       app: mongodb
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -49,13 +48,13 @@ spec:
         volumeMounts:
            - name: mongo-persistent-storage
              mountPath: /data/db
-volumeClaimTemplates:
- - metadata:
-     name: mongo-persistent-storage
-     annotations:
-       volume.beta.kubernetes.io/storage-class: "fast"
-   spec:
-     accessModes: [ "ReadWriteOnce" ]
-     resources:
-       requests:
-         storage: 5Gi
+  volumeClaimTemplates:
+   - metadata:
+       name: mongo-persistent-storage
+       annotations:
+         volume.beta.kubernetes.io/storage-class: "fast"
+     spec:
+       accessModes: [ "ReadWriteOnce" ]
+       resources:
+         requests:
+           storage: 5Gi
