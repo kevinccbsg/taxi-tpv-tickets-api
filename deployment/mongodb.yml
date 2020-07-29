@@ -12,7 +12,7 @@ spec:
     app: mongodb
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongodb
   namespace: development
@@ -44,5 +44,18 @@ spec:
               name: tpv-backend-secret
               key: MONGO_INITDB_ROOT_PASSWORD
         ports:
-        - containerPort: 27017
-          name: mongodb
+          - containerPort: 27017
+            name: mongodb
+        volumeMounts:
+           - name: mongo-persistent-storage
+             mountPath: /data/db
+volumeClaimTemplates:
+ - metadata:
+     name: mongo-persistent-storage
+     annotations:
+       volume.beta.kubernetes.io/storage-class: "fast"
+   spec:
+     accessModes: [ "ReadWriteOnce" ]
+     resources:
+       requests:
+         storage: 5Gi
